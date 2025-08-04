@@ -1,18 +1,20 @@
-# Node modules (for Hardhat, if using npm/yarn)
-node_modules/
-
-# Hardhat cache and artifacts
-cache/
-artifacts/
-
-# Foundry output directory
-out/
-
-# Environment variables
+node_modules
 .env
 
-# Coverage reports
-coverage/
+# Hardhat files
+/cache
+/artifacts
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json
+
+# Hardhat Ignition default folder for deployments against a local node
+ignition/deployments/chain-31337
 
 # macOS system files
 .DS_Store
