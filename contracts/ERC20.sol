@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
+import {console} from "hardhat/console.sol";
+
 contract ERC20 {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address spender, uint256 value);
@@ -42,6 +44,7 @@ contract ERC20 {
         address recipient,
         uint256 amount
     ) external returns (bool) {
+        console.log("Transferring", amount, "recipient", recipient);
         return _transfer(msg.sender, recipient, amount);
     }
 
