@@ -28,4 +28,19 @@ describe("ERC20", function () {
         expect(aliceBalance).to.equals(250);
         expect(bobBalance).to.equals(50);
     });
+
+    it("should revert if sender insuffisient balance", async function () {
+        const [alice, bob] = await ethers.getSigners();
+
+        const ERC20 = await ethers.getContractFactory("ERC20Mock");
+        const erc20Token = (await ERC20.deploy("Name", "SYM", 18));
+
+        await erc20Token.mint(alice.address, 300);
+
+        await expect(erc20Token.transfer(bob.address, 400)).to.be.reverted;
+        await expect(erc20Token.transfer(bob.address, 400)).to.be.revertedWith("ERC20: Insufficient sender balance");
+    })
+
+
+
 });
