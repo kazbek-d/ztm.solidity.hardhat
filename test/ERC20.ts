@@ -1,25 +1,22 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
-import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-import { ContractTransactionResponse } from "ethers";
-import { ERC20Mock } from "../typechain-types";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 
 describe("ERC20", function () {
-    let alice: HardhatEthersSigner, bob: HardhatEthersSigner;
-    let erc20Token: ERC20Mock & {
-        deploymentTransaction(): ContractTransactionResponse;
-    };
-
-    this.beforeEach(async function () {
-        [alice, bob] = await ethers.getSigners();
+    async function deployAndMockERC20() {
+        const [alice, bob] = await ethers.getSigners();
 
         const ERC20 = await ethers.getContractFactory("ERC20Mock");
-        erc20Token = await ERC20.deploy("Name", "SYM", 18);
+        const erc20Token = await ERC20.deploy("Name", "SYM", 18);
 
         await erc20Token.mint(alice.address, 300);
-    });
+
+        return { alice, bob, erc20Token }
+    }
 
     it("transfers tokens correctly", async function () {
+        const { alice, bob, erc20Token } = await loadFixture(deployAndMockERC20);
+
         let aliceBalance = await erc20Token.balancesOf(alice.address);
         let bobBalance = await erc20Token.balancesOf(bob.address);
 
@@ -40,11 +37,15 @@ describe("ERC20", function () {
     });
 
     it("should revert if sender insuffisient balance", async function () {
+        const { bob, erc20Token } = await loadFixture(deployAndMockERC20);
+
         await expect(erc20Token.transfer(bob.address, 400)).to.be.reverted;
         await expect(erc20Token.transfer(bob.address, 400)).to.be.revertedWith("ERC20: Insufficient sender balance");
     })
 
     it("should emit Transfer event on transfers", async function () {
+        const { alice, bob, erc20Token } = await loadFixture(deployAndMockERC20);
+
         await expect(erc20Token.transfer(bob.address, 200))
             .to.emit(erc20Token, "Transfer")
             .withArgs(alice.address, bob.address, 200);
