@@ -41,5 +41,18 @@ $ hh compile
 $ hh test
 $ hh run scripts/deploy.ts
 $ hh run scripts/deploy.ts --network sepolia
+> ERC20 deployed to  0x94Eb7eeEA5Ccc7020DCF7B36415f51e8DA9c5DB1
+$ hh verify --network sepolia 0x94Eb7eeEA5Ccc7020DCF7B36415f51e8DA9c5DB1 Name SYM 18
+> [INFO] Sourcify Verification Skipped: Sourcify verification is currently disabled. To enable it, add the following entry to your > > > Hardhat configuration:
+> sourcify: {
+>   enabled: true
+> }
+> Or set 'enabled' to false to hide this message.
+> For more information, visit https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify#verifying-on-sourcify
+> Successfully submitted source code for contract
+> contracts/ERC20.sol:ERC20 at 0x94Eb7eeEA5Ccc7020DCF7B36415f51e8DA9c5DB1
+> for verification on the block explorer. Waiting for verification result...
+> Successfully verified contract ERC20 on the block explorer.
+> https://sepolia.etherscan.io/address/0x94Eb7eeEA5Ccc7020DCF7B36415f51e8DA9c5DB1#code
 ```
 
