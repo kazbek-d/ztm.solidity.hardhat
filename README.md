@@ -54,5 +54,9 @@ $ hh verify --network sepolia 0x94Eb7eeEA5Ccc7020DCF7B36415f51e8DA9c5DB1 Name SY
 > for verification on the block explorer. Waiting for verification result...
 > Successfully verified contract ERC20 on the block explorer.
 > https://sepolia.etherscan.io/address/0x94Eb7eeEA5Ccc7020DCF7B36415f51e8DA9c5DB1#code
+$ npm install @nomicfoundation/hardhat-foundry
+$ hh init-foundry
+$ forge test -vv
+$ hh test
 ```
 

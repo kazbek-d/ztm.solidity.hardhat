@@ -11,6 +11,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@nomicfoundation/hardhat-foundry": "^1.2.0",
     "dotenv": "^17.2.1",
     "hardhat": "^2.26.2"
   },

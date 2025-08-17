@@ -18,3 +18,7 @@ ignition/deployments/chain-31337
 
 # macOS system files
 .DS_Store
+
+# Foundry files
+cache_forge
+out
