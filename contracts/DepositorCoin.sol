@@ -14,4 +14,16 @@ contract DepositorCoin is ERC20 {
     ) ERC20(_name, _symbol, _decimals) {
         owner = msg.sender;
     }
+
+    function mint(address to, uint256 amount) external {
+        require(msg.sender == owner, "DPC: Only owner can mint");
+
+        _mint(to, amount);
+    }
+
+    function burn(address to, uint256 amount) external {
+        require(msg.sender == owner, "DPC: Only owner can burn");
+
+        _burn(to, amount);
+    }
 }
