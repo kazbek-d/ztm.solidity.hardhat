@@ -81,4 +81,8 @@ contract ERC20 {
 
         emit Transfer(from, address(0), amount);
     }
+
+    function totalSupply() external view returns (uint256) {
+        return _totalSupply;
+    }
 }
