@@ -36,9 +36,7 @@ contract Stablecoin is ERC20 {
         // TODO: should be real price
         uint256 ethUsdPrice = 1000;
 
-        // TODO: should be calculated
-        uint256 surplusInUsd = 500;
-
+        uint256 surplusInUsd = _getSurplusInContractInUsd();
         uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
         uint256 mindDepositorCoinAmount = msg.value *
             ethUsdPrice *
@@ -52,9 +50,7 @@ contract Stablecoin is ERC20 {
         // TODO: should be real price
         uint256 ethUsdPrice = 1000;
 
-        // TODO: should be calculated
-        uint256 surplusInUsd = 500;
-
+        uint256 surplusInUsd = _getSurplusInContractInUsd();
         depositorCoin.burn(msg.sender, burnDepositorCointAmount);
 
         uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
@@ -63,5 +59,18 @@ contract Stablecoin is ERC20 {
         uint256 refundingEth = refundingUsd / ethUsdPrice;
         (bool success, ) = msg.sender.call{value: refundingEth}("");
         require(success, "STC: Withdraw collateral buffer transaction failed");
+    }
+
+    function _getSurplusInContractInUsd() private view returns (uint256) {
+        // TODO: should be real price
+        uint256 ethUsdPrice = 1000;
+
+        uint256 ethContractBalanceInUsd = (address(this).balance - msg.value) *
+            ethUsdPrice;
+        uint256 totalStableCoinBalanceInUsd = _totalSupply;
+        uint256 surplusInUsd = ethContractBalanceInUsd -
+            totalStableCoinBalanceInUsd;
+
+        return surplusInUsd;
     }
 }
