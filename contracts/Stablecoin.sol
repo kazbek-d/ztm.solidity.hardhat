@@ -4,29 +4,29 @@ pragma solidity 0.8.30;
 import {console} from "hardhat/console.sol";
 import {ERC20} from "./ERC20.sol";
 import {DepositorCoin} from "./DepositorCoin.sol";
-import {EthUsdPrice} from "./EthUsdPrice.sol";
+import {Oracle} from "./Oracle.sol";
 
 contract Stablecoin is ERC20 {
     DepositorCoin public depositorCoin;
-    EthUsdPrice public ethUsdPrice;
+    Oracle public oracle;
 
     constructor(
         string memory _name,
         string memory _symbol,
-        EthUsdPrice _ethUsdPrice
+        Oracle _oracle
     ) ERC20(_name, _symbol, 18) {
-        ethUsdPrice = _ethUsdPrice;
+        oracle = _oracle;
     }
 
     function mint() external payable {
-        uint256 mintStablecoinAmount = msg.value * ethUsdPrice.getPrice();
+        uint256 mintStablecoinAmount = msg.value * oracle.getPrice();
         _mint(msg.sender, mintStablecoinAmount);
     }
 
     function burn(uint256 burnStablecoinAmount) external {
         _burn(msg.sender, burnStablecoinAmount);
 
-        uint256 refundingEth = burnStablecoinAmount / ethUsdPrice.getPrice();
+        uint256 refundingEth = burnStablecoinAmount / oracle.getPrice();
 
         (bool success, ) = msg.sender.call{value: refundingEth}("");
         require(success, "STC: Burn refund transaction failed");
@@ -36,7 +36,7 @@ contract Stablecoin is ERC20 {
         uint256 surplusInUsd = _getSurplusInContractInUsd();
         uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
         uint256 mindDepositorCoinAmount = msg.value *
-            ethUsdPrice.getPrice() *
+            oracle.getPrice() *
             usdInDpcPrice;
         depositorCoin.mint(msg.sender, mindDepositorCoinAmount);
     }
@@ -50,14 +50,14 @@ contract Stablecoin is ERC20 {
         uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
         uint256 refundingUsd = burnDepositorCointAmount / usdInDpcPrice;
 
-        uint256 refundingEth = refundingUsd / ethUsdPrice.getPrice();
+        uint256 refundingEth = refundingUsd / oracle.getPrice();
         (bool success, ) = msg.sender.call{value: refundingEth}("");
         require(success, "STC: Withdraw collateral buffer transaction failed");
     }
 
     function _getSurplusInContractInUsd() private view returns (uint256) {
         uint256 ethContractBalanceInUsd = (address(this).balance - msg.value) *
-            ethUsdPrice.getPrice();
+            oracle.getPrice();
         uint256 totalStableCoinBalanceInUsd = _totalSupply;
         uint256 surplusInUsd = ethContractBalanceInUsd -
             totalStableCoinBalanceInUsd;
