@@ -25,6 +25,7 @@ contract Stablecoin is ERC20 {
         uint256 fee = _getFee(msg.value);
         uint256 mintStablecoinAmount = (msg.value - fee) * oracle.getPrice();
         _mint(msg.sender, mintStablecoinAmount);
+    }
 
     function burn(uint256 burnStablecoinAmount) external {
         _burn(msg.sender, burnStablecoinAmount);
