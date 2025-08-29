@@ -44,7 +44,14 @@ contract Stablecoin is ERC20 {
 
     function depositCollateralBuffer() external payable {
         uint256 surplusInUsd = _getSurplusInContractInUsd();
-        uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
+        uint256 usdInDpcPrice;
+        if (surplusInUsd == 0) {
+            depositorCoin = new DepositorCoin("Depositor Coin", "DPC");
+            usdInDpcPrice = 1;
+        } else {
+            usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
+        }
+
         uint256 mindDepositorCoinAmount = msg.value *
             oracle.getPrice() *
             usdInDpcPrice;
