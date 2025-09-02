@@ -50,17 +50,13 @@ contract Stablecoin is ERC20 {
 
     function depositCollateralBuffer() external payable {
         int256 deficitOrSurplusInUsd = _getDeficitOrSurplusInContractInUsd();
-
-        uint256 usdInDpcPrice;
-        uint256 addedSurplusEth;
-
         uint256 oracle_getPrice = oracle.getPrice();
 
         if (deficitOrSurplusInUsd <= 0) {
             uint256 deficitInUsd = uint256(deficitOrSurplusInUsd * -1);
             uint256 deficitInEth = deficitInUsd / oracle_getPrice;
 
-            addedSurplusEth = msg.value - deficitInEth;
+            uint256 addedSurplusEth = msg.value - deficitInEth;
 
             uint256 requiredInitialSurplusInUSD = (initialCollateralRatioPercentage *
                     depositorCoin.totalSupply()) / 100;
@@ -72,19 +68,21 @@ contract Stablecoin is ERC20 {
                 "STC: Initial collateral ration not met"
             );
 
+            uint256 initialSupply = addedSurplusEth * oracle_getPrice;
             depositorCoin = new DepositorCoin(
                 "Depositor Coin",
                 "DPC",
-                depositorCoinLockTime
+                depositorCoinLockTime,
+                msg.sender,
+                initialSupply
             );
-            usdInDpcPrice = 1;
-        } else {
-            uint256 surplusInUsd = uint256(deficitOrSurplusInUsd);
-            addedSurplusEth = msg.value;
-            usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
+            return;
         }
 
-        uint256 mindDepositorCoinAmount = addedSurplusEth *
+        uint256 surplusInUsd = uint256(deficitOrSurplusInUsd);
+        uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
+
+        uint256 mindDepositorCoinAmount = msg.value *
             oracle_getPrice *
             usdInDpcPrice;
         depositorCoin.mint(msg.sender, mindDepositorCoinAmount);
