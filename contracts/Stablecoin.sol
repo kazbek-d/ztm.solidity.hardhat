@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.30;
 
-import {console} from "hardhat/console.sol";
 import {ERC20} from "./ERC20.sol";
 import {DepositorCoin} from "./DepositorCoin.sol";
 import {Oracle} from "./Oracle.sol";
+import {FixedPoint, fromFraction, mulFixedPoint} from "./FixedPoint.sol";
+
+import {console} from "hardhat/console.sol";
 
 contract Stablecoin is ERC20 {
     DepositorCoin public depositorCoin;
@@ -80,11 +82,15 @@ contract Stablecoin is ERC20 {
         }
 
         uint256 surplusInUsd = uint256(deficitOrSurplusInUsd);
-        uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
+        FixedPoint usdInDpcPrice = fromFraction(
+            depositorCoin.totalSupply(),
+            surplusInUsd
+        );
 
-        uint256 mindDepositorCoinAmount = msg.value *
-            oracle_getPrice *
-            usdInDpcPrice;
+        uint256 mindDepositorCoinAmount = mulFixedPoint(
+            msg.value * oracle_getPrice,
+            usdInDpcPrice
+        );
         depositorCoin.mint(msg.sender, mindDepositorCoinAmount);
     }
 
