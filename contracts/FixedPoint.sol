@@ -3,6 +3,8 @@ pragma solidity 0.8.30;
 
 type FixedPoint is uint256;
 
+// for more advanced calculations use: https://github.com/PaulRBerg/prb-math
+
 using {add as +} for FixedPoint global;
 using {sub as -} for FixedPoint global;
 using {mul as *} for FixedPoint global;
@@ -38,4 +40,8 @@ function fromFraction(uint256 numirator, uint256 denumirator) pure returns(Fixed
 
 function mulFixedPoint(uint256 a, FixedPoint b) pure returns(uint256) {
     return a * FixedPoint.unwrap(b) / DECIMALS;
+}
+
+function divFixedPoint(uint256 a, FixedPoint b) pure returns(uint256) {
+    return a * DECIMALS / FixedPoint.unwrap(b);
 }

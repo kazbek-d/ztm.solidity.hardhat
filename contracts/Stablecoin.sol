@@ -4,7 +4,7 @@ pragma solidity 0.8.30;
 import {ERC20} from "./ERC20.sol";
 import {DepositorCoin} from "./DepositorCoin.sol";
 import {Oracle} from "./Oracle.sol";
-import {FixedPoint, fromFraction, mulFixedPoint} from "./FixedPoint.sol";
+import {FixedPoint, fromFraction, mulFixedPoint, divFixedPoint} from "./FixedPoint.sol";
 
 import {console} from "hardhat/console.sol";
 
@@ -108,8 +108,15 @@ contract Stablecoin is ERC20 {
 
         uint256 surplusInUsd = uint256(deficitOrSurplusInUsd);
 
-        uint256 usdInDpcPrice = depositorCoin.totalSupply() / surplusInUsd;
-        uint256 refundingUsd = burnDepositorCointAmount / usdInDpcPrice;
+        FixedPoint usdInDpcPrice = fromFraction(
+            depositorCoin.totalSupply(),
+            surplusInUsd
+        );
+
+        uint256 refundingUsd = divFixedPoint(
+            burnDepositorCointAmount,
+            usdInDpcPrice
+        );
 
         uint256 refundingEth = refundingUsd / oracle.getPrice();
         (bool success, ) = msg.sender.call{value: refundingEth}("");
