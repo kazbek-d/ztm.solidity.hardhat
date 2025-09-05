@@ -15,6 +15,11 @@ contract Stablecoin is ERC20 {
     uint256 public initialCollateralRatioPercentage;
     uint256 public depositorCoinLockTime;
 
+    error InitialCollateralRatioError(
+        string message,
+        uint256 minimumDepositAmount
+    );
+
     constructor(
         string memory _name,
         string memory _symbol,
@@ -65,10 +70,14 @@ contract Stablecoin is ERC20 {
             uint256 requiredInitialSurplusInEth = requiredInitialSurplusInUSD /
                 oracle.getPrice();
 
-            require(
-                addedSurplusEth >= requiredInitialSurplusInEth,
-                "STC: Initial collateral ration not met"
-            );
+            if (addedSurplusEth < requiredInitialSurplusInEth) {
+                uint256 minimumDeposit = requiredInitialSurplusInEth +
+                    deficitInEth;
+                revert InitialCollateralRatioError(
+                    "STC: Initial collateral ration not met, minimum is",
+                    minimumDeposit
+                );
+            }
 
             uint256 initialSupply = addedSurplusEth * oracle_getPrice;
             depositorCoin = new DepositorCoin(
